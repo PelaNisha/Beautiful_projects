@@ -69,6 +69,7 @@ def find_trending():
 	time = soup.findAll("span", class_="date_sh")
 	a = soup.findAll("div",class_="details")
 	comments = soup.findAll("div",class_="extr")
+
 	for mydiv in a:
 		final = mydiv.text
 		li1.append(final)
@@ -78,24 +79,47 @@ def find_trending():
 		li2.append(finl)
 	for c in comments:
 		d = c.text
-		e = d.split()
-		if len(e)>1:
-			f = " ".join(e[1:])
-			li3.append(f)
-		
-	print(li3)
-	return li1, li2
-def form_list_of_dict(x,y):
+		li3.append(d)
+
+	li4 = []
+	for ele in li3:
+		# print(ele)
+		if 'dy' in ele:
+			x = ele.split("dy")
+			z = edit(x)
+			li4.append(z)
+		elif "h" in ele:
+			x = ele.split("h" or "dy")
+			z = edit(x)
+			
+		else:
+			li4.append(ele)		
+	return li1, li2, li4
+
+def edit(x):
+	if len(x[1])>3:
+		y = str(x).split(" ")
+		z = y[1]
+	else:
+		z = x[1]
+		print(x[1])	
+	print("*****")
+	return z
+
+
+def form_list_of_dict(x,y, z):
 	di = {}
 	li = []
-	for i in range(0, len(y)):
+	for i in range(0, len(z)):
 		di['title'] = x[i]
-		di['time'] = y[i]
+		# di['time'] = y[i]
+		di['comments'] = z[i]
+
 		li.append(di)
 		di ={}
 	return li	
 	
  
-x, y = find_trending()
-z = form_list_of_dict(x,y)
+x, y, a = find_trending()
+z = form_list_of_dict(x,y, a)
 save_to_file(z, 'new.json')
