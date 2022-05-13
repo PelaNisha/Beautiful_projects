@@ -52,11 +52,11 @@ def login():
 			break  
 	return di
 	
+	
 def find_trending():
 	s = requests.Session()
 	li1 = []
 	li2 = []
-	di = {}
 	li3 = []
 	res= s.post(uu, json=payload)
 	# An authorised request.
@@ -67,13 +67,15 @@ def find_trending():
 	
 	fin = soup.findAll("div",class_="items tiny one-line")
 	time = soup.findAll("span", class_="date_sh")
-	a = soup.findAll("div",class_="details")
+	details = soup.findAll("div",class_="details")
 	comments = soup.findAll("div",class_="extr")
 
-	for mydiv in a:
+	# for title
+	for mydiv in details:
 		final = mydiv.text
 		li1.append(final)
 
+	# for time 
 	for t in time:
 		finl = t.text
 		li2.append(finl)
@@ -82,6 +84,8 @@ def find_trending():
 		li3.append(d)
 
 	li4 = []
+
+	# for no. of comments
 	for ele in li3:
 		# print(ele)
 		if 'dy' in ele:
@@ -94,7 +98,17 @@ def find_trending():
 			
 		else:
 			li4.append(ele)		
-	return li1, li2, li4
+
+	# for links	
+	url_list = []	
+	for detail in details:
+		links = detail.find_all("a")
+		for link in links:
+			link_url = link["href"]
+			url_list.append(f"https://allpoetry.com{link_url}\n")
+
+
+	return li1, li2, li4, url_list
 
 def edit(x):
 	if len(x[1])>3:
@@ -107,19 +121,20 @@ def edit(x):
 	return z
 
 
-def form_list_of_dict(x,y, z):
+def form_list_of_dict(x,y, z, url_list):
 	di = {}
 	li = []
 	for i in range(0, len(z)):
 		di['title'] = x[i]
 		# di['time'] = y[i]
 		di['comments'] = z[i]
+		di['url'] = url_list[i]
 
 		li.append(di)
 		di ={}
 	return li	
 	
  
-x, y, a = find_trending()
-z = form_list_of_dict(x,y, a)
+x, y, a, b = find_trending()
+z = form_list_of_dict(x,y, a,b)
 save_to_file(z, 'new.json')
