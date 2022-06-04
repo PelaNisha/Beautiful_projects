@@ -34,6 +34,7 @@ def organize_data(li):
 	di['social media'] = final_list
 	return di
 
+
 li = get_contacts()
 b = organize_data(li)
 save_to_file(b, 'new.json')
